@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스트림스 활동지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+        }
+
+        .left-panel {
+            flex-shrink: 0;
+            width: 300px;
+        }
+        
+        .score-table-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .score-table h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        .score-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .score-table th, .score-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .score-table th {
+            background-color: #f2f2f2;
+        }
+        
+        .main-game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .worksheet-grid-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: #444;
+            padding: 10px;
+            border-radius: 10px;
+            gap: 5px;
+        }
+
+        .worksheet-grid {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* 첫 번째 줄과 두 번째 줄을 엇갈리게 배치 */
+        .worksheet-grid.first-row {
+            margin-right: 85px;
+        }
+
+        .worksheet-grid.second-row {
+            margin-left: 85px;
+        }
+        
+        .arrow {
+            font-size: 3em;
+            color: #fff;
+            font-weight: bold;
+            align-self: flex-start;
+            margin-left: 10px;
+        }
+
+        .cell {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .cell.active {
+            border: 3px solid #FFC107;
+        }
+        
+        .cell.filled {
+            background-color: #eee;
+            cursor: default;
+        }
+
+        #inputArea {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            width: 340px;
+        }
+
+        #inputDisplay {
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        #inputConfirmBtn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #2196F3;
+            color: white;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        #inputConfirmBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .game-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #calculateScoreBtn, #restartBtn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        
+        #restartBtn {
+            background-color: #f44336;
+        }
+
+        #calculateScoreBtn:disabled, #restartBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #scoreResult {
+            margin-top: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #FF5722;
+        }
+        
+        #message {
+            margin-top: 10px;
+            color: red;
+            font-size: 1em;
+        }
+        .joker-button-area {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-panel score-table-container">
+            <h3>점수표</h3>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>오름차순 칸수</th>
+                        <th>점수</th>
+                        <th>오름차순 칸수</th>
+                        <th>점수</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>0</td><td>11</td><td>30</td></tr>
+                    <tr><td>2</td><td>1</td><td>12</td><td>35</td></tr>
+                    <tr><td>3</td><td>3</td><td>13</td><td>40</td></tr>
+                    <tr><td>4</td><td>5</td><td>14</td><td>50</td></tr>
+                    <tr><td>5</td><td>7</td><td>15</td><td>60</td></tr>
+                    <tr><td>6</td><td>9</td><td>16</td><td>70</td></tr>
+                    <tr><td>7</td><td>11</td><td>17</td><td>85</td></tr>
+                    <tr><td>8</td><td>15</td><td>18</td><td>100</td></tr>
+                    <tr><td>9</td><td>20</td><td>19</td><td>150</td></tr>
+                    <tr><td>10</td><td>25</td><td>20</td><td>300</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="main-game-area">
+            <h1>스트림스 활동지</h1>
+            
+            <div class="worksheet-grid-wrapper">
+                <div id="worksheetGrid1" class="worksheet-grid first-row"></div>
+                <div class="arrow">↓</div>
+                <div id="worksheetGrid2" class="worksheet-grid second-row"></div>
+            </div>
+            
+            <div id="inputArea">
+                <input type="text" id="inputDisplay" placeholder="숫자 또는 조커를 입력하세요." readonly>
+                <button id="inputConfirmBtn" disabled>입력 완료</button>
+            </div>
+            
+            <div class="joker-button-area">
+                <button id="jokerBtn" class="input-btn joker">⭐</button>
+            </div>
+            
+            <div class="game-buttons">
+                <button id="calculateScoreBtn" disabled>점수 계산하기</button>
+                <button id="restartBtn">게임 다시 시작</button>
+            </div>
+            
+            <div id="message"></div>
+            <div id="scoreResult"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const worksheetGrid1 = document.getElementById('worksheetGrid1');
+        const worksheetGrid2 = document.getElementById('worksheetGrid2');
+        const inputDisplay = document.getElementById('inputDisplay');
+        const inputConfirmBtn = document.getElementById('inputConfirmBtn');
+        const jokerBtn = document.getElementById('jokerBtn');
+        const calculateScoreBtn = document.getElementById('calculateScoreBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const scoreResult = document.getElementById('scoreResult');
+        const message = document.getElementById('message');
+
+        const SCORE_TABLE = {
+            1: 0, 2: 1, 3: 3, 4: 5, 5: 7, 6: 9, 7: 11, 8: 15, 9: 20, 10: 25,
+            11: 30, 12: 35, 13: 40, 14: 50, 15: 60, 16: 70, 17: 85, 18: 100, 19: 150, 20: 300
+        };
+        const WORKSHEET_SIZE = 20;
+        let selectedCell = null;
+        let worksheetValues = new Array(WORKSHEET_SIZE).fill(null);
+        let tileCounts = {}; // 각 타일이 사용된 횟수를 기록합니다.
+
+        // 게임 규칙에 따른 타일별 사용 가능 횟수
+        const TILE_LIMITS = {};
+        for (let i = 1; i <= 10; i++) TILE_LIMITS[i] = 1;
+        for (let i = 11; i <= 19; i++) TILE_LIMITS[i] = 2;
+        for (let i = 20; i <= 30; i++) TILE_LIMITS[i] = 1;
+        TILE_LIMITS['Joker'] = 1;
+
+        const createWorksheetCells = () => {
+            worksheetGrid1.innerHTML = '';
+            worksheetGrid2.innerHTML = '';
+            for (let i = 0; i < WORKSHEET_SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', () => selectCell(cell));
+                if (i < 10) {
+                    worksheetGrid1.appendChild(cell);
+                } else {
+                    worksheetGrid2.appendChild(cell);
+                }
+            }
+        };
+
+        const selectCell = (cell) => {
+            if (cell.classList.contains('filled')) {
+                message.textContent = '이미 채워진 칸은 수정할 수 없습니다.';
+                return;
+            }
+            if (selectedCell) {
+                selectedCell.classList.remove('active');
+            }
+            selectedCell = cell;
+            selectedCell.classList.add('active');
+            message.textContent = '키보드로 숫자를 입력하세요.';
+            inputDisplay.value = '';
+            inputConfirmBtn.disabled = false;
+        };
+        
+        const fillCell = (value) => {
+            if (!selectedCell) {
+                message.textContent = '먼저 숫자를 넣을 칸을 선택해주세요.';
+                return;
+            }
+        
+            // 타일 사용 횟수 검증
+            if (tileCounts[value] === undefined) {
+                tileCounts[value] = 0;
+            }
+
+            if (tileCounts[value] >= TILE_LIMITS[value]) {
+                if (value === 'Joker') {
+                    message.textContent = '조커 타일은 한 번만 사용할 수 있습니다.';
+                } else {
+                    message.textContent = `${value} 타일은 더 이상 사용할 수 없습니다.`;
+                }
+                return;
+            }
+
+            tileCounts[value]++;
+            
+            if (value === 'Joker') {
+                selectedCell.textContent = '⭐';
+                jokerBtn.disabled = true;
+            } else {
+                selectedCell.textContent = value;
+            }
+            
+            const index = parseInt(selectedCell.dataset.index);
+            worksheetValues[index] = value;
+            selectedCell.classList.remove('active');
+            selectedCell.classList.add('filled');
+            selectedCell = null;
+            message.textContent = '';
+            inputDisplay.value = '';
+            inputConfirmBtn.disabled = true;
+            checkGameStatus();
+        };
+
+        const handleKeydown = (event) => {
+            if (!selectedCell) return;
+            const key = event.key;
+            if (key >= '0' && key <= '9') {
+                inputDisplay.value += key;
+            } else if (key === 'Backspace') {
+                inputDisplay.value = inputDisplay.value.slice(0, -1);
+            } else if (key === 'Enter') {
+                if(inputDisplay.value) {
+                    confirmInput();
+                }
+            }
+        };
+        
+        const confirmInput = () => {
+            const value = inputDisplay.value;
+            if (value === '') {
+                message.textContent = '숫자를 입력해주세요.';
+                return;
+            }
+            const numberValue = parseInt(value);
+            if (isNaN(numberValue) || numberValue < 1 || numberValue > 30) {
+                message.textContent = '1에서 30 사이의 유효한 숫자를 입력해주세요.';
+                return;
+            }
+            fillCell(numberValue);
+        };
+
+        const checkGameStatus = () => {
+            if (worksheetValues.every(value => value !== null)) {
+                disableInputButtons();
+                calculateScoreBtn.disabled = false;
+                message.textContent = '모든 칸이 채워졌습니다! 점수를 계산해주세요.';
+            }
+        };
+
+        const disableInputButtons = () => {
+            jokerBtn.disabled = true;
+            inputConfirmBtn.disabled = true;
+        };
+        
+        const enableInputButtons = () => {
+            jokerBtn.disabled = tileCounts['Joker'] >= TILE_LIMITS['Joker'];
+            inputConfirmBtn.disabled = false;
+        };
+
+        const calculateScore = () => {
+            let totalScore = 0;
+            let currentStreak = 0;
+            let lastValue = -Infinity;
+            const effectiveValues = worksheetValues.map(value => {
+                if (value === 'Joker') return 'Joker';
+                return parseInt(value);
+            });
+            for (let i = 0; i < effectiveValues.length; i++) {
+                const currentValue = effectiveValues[i];
+                if (currentValue === 'Joker') {
+                    let nextValue = (i < effectiveValues.length - 1) ? effectiveValues[i + 1] : Infinity;
+                    let possibleJokerValue = lastValue + 1;
+                    if (nextValue === 'Joker') {
+                        possibleJokerValue = lastValue + 1;
+                    } else if (nextValue < possibleJokerValue) {
+                        possibleJokerValue = nextValue;
+                    }
+                    lastValue = possibleJokerValue;
+                    currentStreak++;
+                } else if (currentValue > lastValue) {
+                    currentStreak++;
+                    lastValue = currentValue;
+                } else if (currentValue === lastValue) {
+                    currentStreak++;
+                    lastValue = currentValue;
+                } else {
+                    totalScore += SCORE_TABLE[currentStreak] || 0;
+                    currentStreak = 1;
+                    lastValue = currentValue;
+                }
+            }
+            totalScore += SCORE_TABLE[currentStreak] || 0;
+            scoreResult.textContent = `총점: ${totalScore}점`;
+            message.textContent = '';
+        };
+
+        const restartGame = () => {
+            worksheetValues = new Array(WORKSHEET_SIZE).fill(null);
+            selectedCell = null;
+            scoreResult.textContent = '';
+            message.textContent = '';
+            inputDisplay.value = '';
+            tileCounts = {};
+            
+            createWorksheetCells();
+            enableInputButtons();
+            calculateScoreBtn.disabled = true;
+        };
+
+        createWorksheetCells();
+        
+        jokerBtn.addEventListener('click', () => fillCell('Joker'));
+        inputConfirmBtn.addEventListener('click', confirmInput);
+        calculateScoreBtn.addEventListener('click', calculateScore);
+        restartBtn.addEventListener('click', restartGame);
+        
+        document.addEventListener('keydown', handleKeydown);
+    </script>
+</body>
+</html>
